@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+    events-microservice:
+      build: .
+      container_name: events-microservice
+      entrypoint: ["/bin/sh", "./entrypoint.sh"]
+      volumes:
+        - .:/usr/app/
+        - /usr/app/node_modules
+      environment:
+        - PORT=3001
+        - DB_USERNAME=postgres
+        - DB_PASSWORD=docker
+        - DB_DATABASE=events-microservice
+        - DB_HOST=postgress-events-microservice
+        - DB_DIALECT=postgres
+        - DB_PORT=5432
+      ports:
+        - "3001:3001"
+      depends_on:
+        - postgress-events-microservice
+      networks:
+        - events-microservice-network
+
+
+    postgress-events-microservice:
+      image: postgres:10.4
+      container_name: postgress-events-microservice
+      restart: always
+      tty: true
+      ports:
+        - "5433:5432"
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_DB=events-microservice
+        - POSTGRES_PASSWORD=docker
+      networks:
+        - events-microservice-network
+
+networks:
+  events-microservice-network:
+    driver: bridge
