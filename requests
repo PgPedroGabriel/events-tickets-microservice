@@ -1,46 +1,49 @@
 GET http://localhost:3001 HTTP/1.1
 
-@baseUrl = http://localhost:3000
-
-# @name HealthyCheck
+@baseUrl = http://localhost:3001
 
 ###
 
-# @name createUser
-POST {{baseUrl}} HTTP/1.1
-Content-Type: application/json
+# @name list
+GET {{baseUrl}} HTTP/1.1
 
-{
-  "email": "devpedrogabriel@gmail.com",
-  "name": "Pedro Gabriel",
-  "password": "123123123",
-  "passwordConfirm": "123123123",
-  "username": "x@gmail.com"
-}
+@firstId = {{list.response.body.$.rows[0].id}}
+@secondId = {{list.response.body.$.rows[1].id}}
 
 ###
 
-@emaiConfirmationToken = {{createUser.response.body.$.email_confirmation_token}}
+# @name getEvent1
+GET {{baseUrl}}/{{firstId}} HTTP/1.1
 
-# @name emailConfirmation
-PUT {{baseUrl}}/auth/verify-email/{{emaiConfirmationToken}} HTTP/1.1
+@event_id = {{getEvent1.response.body.$.id}}
+@ticket_id = {{getEvent1.response.body.$.tickets[0].id}}
 
 
 ###
 
-# @name userAuth
-POST {{baseUrl}}/auth HTTP/1.1
+# @name getEvent2
+GET {{baseUrl}}/{{secondId}} HTTP/1.1
+
+@event_id2 = {{getEvent2.response.body.$.id}}
+@ticket_id2 = {{getEvent2.response.body.$.tickets[1].id}}
+
+###
+
+# @name FilterEvent
+POST {{baseUrl}}/filter-events-tickets HTTP/1.1
 content-type: application/json
 
-{
-  "username": "x@gmail.com",
-  "password": "123123123"
-}
-
-###
-
-@token = {{userAuth.response.body.$.token}}
-
-# @name checkToken
-GET {{baseUrl}}/auth/check-token HTTP/1.1
-Authorization: {{token}}
+[
+  {
+    "event_id": "{{event_id}}",
+    "tickets": [
+      "{{ticket_id}}"
+    ]
+  },
+    {
+    "event_id": "{{event_id2}}",
+    "tickets": [
+      "{{ticket_id2}}"
+    ]
+  }
+]

@@ -8,7 +8,7 @@ class EventController {
    */
   static async list(req, res) {
     const users = await Event.findAndCountAll({
-      attributes: ['id', 'name', 'createdAt', 'updatedAt'],
+      attributes: ['id', 'name', 'convenience_tax', 'createdAt', 'updatedAt'],
       include: [
         {
           model: Ticket,
@@ -28,7 +28,7 @@ class EventController {
     const { id } = req.params;
 
     const event = await Event.findByPk(id, {
-      attributes: ['id', 'name', 'createdAt', 'updatedAt'],
+      attributes: ['id', 'name', 'convenience_tax', 'createdAt', 'updatedAt'],
       include: [
         {
           model: Ticket,
@@ -66,6 +66,57 @@ class EventController {
     if (!events || !events.length) {
       return res.status(404).send();
     }
+
+    return res.json(events);
+  }
+
+  /**
+   * Filter events tickets
+   * sample request body structure
+   * [
+   *   {
+   *     event_id: '...',
+   *     tickets: [
+   *       {
+   *         ticket_id: '...',
+   *       }
+   *     ]
+   *   }
+   * ]
+   *
+   * @return array of events and tickets avaliablety
+   */
+
+  static async filterEventsTickets(req, res) {
+    const arrayEvents = req.body;
+
+    if (!arrayEvents.length) {
+      return res.status(400).send();
+    }
+    // Filter tickets of req.body
+    const arrayTickets = arrayEvents.reduce((accumulator, event) => {
+      event.tickets.forEach(ticketId => accumulator.push(ticketId));
+      return accumulator;
+    }, []);
+
+    // Search Events
+    const events = await Event.findAll({
+      attributes: ['id', 'name', 'convenience_tax'],
+      where: {
+        id: arrayEvents.map(el => el.event_id)
+      },
+      include: [
+        {
+          model: Ticket,
+          as: 'tickets',
+          attributes: ['id', 'name', 'price', 'qty_available'],
+          required: false,
+          where: {
+            id: arrayTickets
+          }
+        }
+      ]
+    });
 
     return res.json(events);
   }
