@@ -33,17 +33,4 @@ GET {{baseUrl}}/{{secondId}} HTTP/1.1
 POST {{baseUrl}}/filter-events-tickets HTTP/1.1
 content-type: application/json
 
-[
-  {
-    "event_id": "{{event_id}}",
-    "tickets": [
-      "{{ticket_id}}"
-    ]
-  },
-    {
-    "event_id": "{{event_id2}}",
-    "tickets": [
-      "{{ticket_id2}}"
-    ]
-  }
-]
+[{"event_id":"e37d3ef0-cf9d-494c-8341-db1b4dd8adb4","tickets":["a00084ad-abe9-49a2-a612-3454d6b383c9"]}]
