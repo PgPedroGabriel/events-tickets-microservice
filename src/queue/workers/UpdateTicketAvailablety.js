@@ -30,18 +30,22 @@ class UpdateOrderWorker extends RabbitMQ {
         console.log(`Updating tickets availablety`);
 
         if (json.status === 'APPROVED') {
-          const mapTicketsIdToQuantity = json.product.reduce(
+          const mapTicketsIdToQuantity = json.products.reduce(
             (accumulator, product) => {
-              accumulator[product.id] = accumulator.quantity;
+              accumulator[product.id] = product.quantity;
 
               return accumulator;
             },
             {}
           );
 
+          console.log(mapTicketsIdToQuantity);
+
           const tickets = await TicketsRepository.findByIds(
             Object.keys(mapTicketsIdToQuantity)
           );
+
+          console.log(tickets.length);
 
           tickets.forEach(async ticket => {
             ticket.qty_available -= mapTicketsIdToQuantity[ticket.id];
@@ -49,10 +53,10 @@ class UpdateOrderWorker extends RabbitMQ {
 
             await ticket.save();
           });
+
+          this.channel.ack(msg); // remove from queue
         }
       }
-
-      this.channel.ack(msg); // remove from queue
     });
   }
 }
