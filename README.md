@@ -19,6 +19,19 @@
 
 ``` docker-compose up --build -d ```
 
+2. Install RabbitMQ container and make sure that container is in order-network, sample:
+
+2.1 - install RabbitMQ container
+
+``` docker run -d --hostname my-rabbit --name some-rabbit -p 8080:15672 rabbitmq:3-management ```
+
+2.2 - Add rabbitmq container events network
+
+``` docker network ls ```
+
+``` docker network connect events-tickets-microservice_events-microservice-network some-rabbit ```
+
+
 ### Using your local machine
 
 1. download yarn
