@@ -7,6 +7,8 @@
 * Read an event
 * Filter event and tickets for another prouposes
 * Remove ticket available count with RabbitMQ Consumer
+* (Sentry to trace error logs)[https://sentry.io/]
+* Morgan to trace requests
 
 ### Checks
 
@@ -76,8 +78,8 @@ Install plugins
 ### Development pending tasks
 
 - [ ] Code coverge > 80%
-- [ ] Add Logging traces
-- [ ] Add ALARM when errors occur
+- [x] Add Logging traces
+- [x] Add ALARM when errors occur
 - [ ] Revison of production dockerfile builder
 - [ ] Create CI/CD pipelines with docker-compose to GCP Cloud Builder
 - [ ] Send pod to Kubernets Cluster
